@@ -83,15 +83,12 @@ class OrderViewset(APIView):
     订单
     """
     message = "必须是vip及以上才有权访问"
-    # #认证
     authentication_classes = [Authication]
-    # #权限
-    # permission_classes = [MyPermission]
-    #频率控制
-
+    permission_classes = [MyPermission]
     throttle_classes = [UserThrottle,]
+
     def get(self,request,*args,**kwargs):
-        self.dispatch
+
         ret = {
 
             "code":1000,

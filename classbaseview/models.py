@@ -3,12 +3,8 @@ from django.db import models
 
 # Create your models here.
 
-
-class Movie(models.Model):
-    Name = models.CharField(max_length=125)
-    Url = models.CharField(max_length=120)
-    Quote = models.CharField(max_length=220)
-    Star = models.CharField(max_length=20)
+class UserGroup(models.Model):
+    title = models.CharField(max_length=32)
 
 
 class UserInfo(models.Model):
@@ -21,7 +17,12 @@ class UserInfo(models.Model):
     username = models.CharField(max_length=32,unique=True)
     password = models.CharField(max_length=32)
 
+    group = models.ForeignKey("UserGroup",on_delete=models.CASCADE)
+    roles = models.ManyToManyField("Role")
 
 class UserToken(models.Model):
     user = models.OneToOneField(UserInfo,primary_key=True,on_delete=models.CASCADE)
     token = models.CharField(max_length=64)
+
+class Role(models.Model):
+        title = models.CharField(max_length=32)

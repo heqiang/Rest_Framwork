@@ -27,3 +27,7 @@ cbv执行流程：
                 - 如何验证(基于数据库实现用户认证)
                 - 源码流程(面向对象回顾流程)
 
+    6、django请求生命周期
+
+    7、django请求生命周期(包含rest framwork框架)
+      ps:dispatch
