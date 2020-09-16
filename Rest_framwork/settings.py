@@ -143,5 +143,8 @@ REST_FRAMEWORK = {
         "hq":"3/m",
         "user":"4/m"
     },
+    "VERSION_PARAM":"version",
+    "DEFAULT_VERSION":"v1",
+    "ALLOWED_VERSIONS":["v1","v2"]
 
 }

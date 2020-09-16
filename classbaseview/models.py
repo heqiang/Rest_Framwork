@@ -9,16 +9,16 @@ class UserGroup(models.Model):
 
 class UserInfo(models.Model):
     user_type_choince = (
-        ("1", "普通用户"),
-        ("2", "vip"),
-        ("3", "svip")
+        (1, "普通用户"),
+        (2, "vip"),
+        (3, "svip")
     )
     user_type = models.IntegerField(choices=user_type_choince)
     username = models.CharField(max_length=32,unique=True)
     password = models.CharField(max_length=32)
-
-    group = models.ForeignKey("UserGroup",on_delete=models.CASCADE)
+    group = models.ForeignKey(UserGroup,on_delete=models.CASCADE)
     roles = models.ManyToManyField("Role")
+
 
 class UserToken(models.Model):
     user = models.OneToOneField(UserInfo,primary_key=True,on_delete=models.CASCADE)

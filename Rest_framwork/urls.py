@@ -23,8 +23,9 @@ from django.conf.urls  import url
 # router.register(r'user',v.UserViewset,basename="")
 
 urlpatterns = [
-        url(r"^api/v1/user",v.UserViewset.as_view()),
-        url(r"^api/v1/order", v.OrderViewset.as_view())
+        # url(r"^api/v1/user",v.UserViewset.as_view()),
+        # url(r"^api/v1/order", v.OrderViewset.as_view())
+        url("",include("classbaseview.urls"))
 
 ]
 # urlpatterns += router.urls

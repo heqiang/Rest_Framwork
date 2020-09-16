@@ -1,13 +1,16 @@
 # Create your views here.
-from django.http import JsonResponse
+import  hashlib
+import time
+import json
+from django.http import JsonResponse,HttpResponse
 from classbaseview.models import UserInfo,UserToken
+from classbaseview.serializers import UserSerializer
 from classbaseview.util.Authication import Authication
 from classbaseview.util.MyPermission import MyPermission
 from classbaseview.util.Mythrottles import  MyBaseThrottle,VisitThrottle,UserThrottle
 from rest_framework.views import APIView
-
-import  hashlib
-import time
+from rest_framework.versioning import  URLPathVersioning
+from classbaseview.models import UserInfo
 
 order_dict = {
     1:{
@@ -76,8 +79,6 @@ class UserViewset(APIView):
     def delete(self, request, *args, **kwargs):
         pass
 
-
-
 class OrderViewset(APIView):
     """
     订单
@@ -101,4 +102,20 @@ class OrderViewset(APIView):
             pass
         return  JsonResponse(ret)
 
+class UserView(APIView):
 
+    versioning_class = URLPathVersioning
+
+    def get(self,request,*args,**kwargs):
+        VERSION = request.version
+        print(VERSION)
+        return HttpResponse(VERSION)
+
+class UserinfoView(APIView):
+
+       def get(self,requests,*args,**kwargs):
+            users = UserInfo.objects.all()
+            print(users)
+            ser = UserSerializer(instance= users,many=True)
+            ret = json.dumps(ser.data,ensure_ascii=False)
+            return HttpResponse(ret)
