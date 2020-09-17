@@ -3,8 +3,8 @@ import  hashlib
 import time
 import json
 from django.http import JsonResponse,HttpResponse
-from classbaseview.models import UserInfo,UserToken
-from classbaseview.serializers import UserSerializer
+from classbaseview.models import UserInfo,UserToken,UserGroup
+from classbaseview.serializers import UserSerializer,UserGroupSerlizer
 from classbaseview.util.Authication import Authication
 from classbaseview.util.MyPermission import MyPermission
 from classbaseview.util.Mythrottles import  MyBaseThrottle,VisitThrottle,UserThrottle
@@ -108,14 +108,18 @@ class UserView(APIView):
 
     def get(self,request,*args,**kwargs):
         VERSION = request.version
-        print(VERSION)
         return HttpResponse(VERSION)
 
-class UserinfoView(APIView):
-
-       def get(self,requests,*args,**kwargs):
-            users = UserInfo.objects.all()
-            print(users)
-            ser = UserSerializer(instance= users,many=True)
-            ret = json.dumps(ser.data,ensure_ascii=False)
-            return HttpResponse(ret)
+class UserInfoView(APIView):
+    def get(self, request, *args, **kwargs):
+        users = UserInfo.objects.all()
+        ser = UserSerializer(instance=users,many=True,context={'request': request})
+        ret = json.dumps(ser.data, ensure_ascii=False)
+        return HttpResponse(ret)
+class GroupView(APIView):
+    def get(self, request, *args, **kwargs):
+        pk = kwargs.get('pk')
+        obj = UserGroup.objects.filter(pk=pk).first()
+        ser = UserGroupSerlizer(instance=obj, many=False)
+        ret = json.dumps(ser.data, ensure_ascii=False)
+        return HttpResponse(ret)
