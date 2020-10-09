@@ -4,14 +4,14 @@ import time
 import json
 from django.http import JsonResponse,HttpResponse
 from classbaseview.models import UserInfo,UserToken,UserGroup
-from classbaseview.serializers import UserSerializer,UserGroupSerlizer
+from classbaseview.serializers import UserSerializer,UserGroupSerlizer,GroupSerlizers
 from classbaseview.util.Authication import Authication
 from classbaseview.util.MyPermission import MyPermission
 from classbaseview.util.Mythrottles import  MyBaseThrottle,VisitThrottle,UserThrottle
 from rest_framework.views import APIView
 from rest_framework.versioning import  URLPathVersioning
 from classbaseview.models import UserInfo
-
+from  rest_framework.serializers import  ValidationError
 order_dict = {
     1:{
         "name":"洗发水",
@@ -110,10 +110,13 @@ class UserView(APIView):
         VERSION = request.version
         return HttpResponse(VERSION)
 
+
 class UserInfoView(APIView):
+    # versioning_class = URLPathVersioning
+
     def get(self, request, *args, **kwargs):
         users = UserInfo.objects.all()
-        ser = UserSerializer(instance=users,many=True,context={'request': request})
+        ser = UserSerializer(instance=users,many=True)
         ret = json.dumps(ser.data, ensure_ascii=False)
         return HttpResponse(ret)
 class GroupView(APIView):
@@ -123,3 +126,26 @@ class GroupView(APIView):
         ser = UserGroupSerlizer(instance=obj, many=False)
         ret = json.dumps(ser.data, ensure_ascii=False)
         return HttpResponse(ret)
+
+###########################
+"""
+数据校验
+  钩子函数
+"""
+
+class Group(APIView):
+
+    def post(self,request,*args,**kwargs):
+        ser = GroupSerlizers(data=request.data)
+        ser.data
+        msg = ""
+        if ser.is_valid():
+            title = ser.validated_data["title"]
+            msg = "ok"
+        else:
+            msg = ser.errors["title"][0]
+        return HttpResponse(msg)
+
+
+
+

@@ -131,20 +131,20 @@ STATIC_URL = '/static/'
 
 # 认证 权限 节流 全局配置
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10,
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    # 'PAGE_SIZE': 10,
     #全局认证
     # "DEFAULT_AUTHENTICATION_CLASSES":["classbaseview.auth.Authication1","classbaseview.auth.Authication"],
     # "DEFAULT_AUTHENTICATION_CLASSES": ["classbaseview.util.Authication.Authication"],
     #匿名用户配置
     # "UNAUTHENTICATED_USER":None,
     # "UNAUTHENTICATED_TOKEN":None,
-    "DEFAULT_THROTTLE_RATES":{
-        "hq":"3/m",
-        "user":"4/m"
-    },
-    "VERSION_PARAM":"version",
-    "DEFAULT_VERSION":"v1",
-    "ALLOWED_VERSIONS":["v1","v2"]
+    # "DEFAULT_THROTTLE_RATES":{
+    #     "hq":"3/m",
+    #     "user":"4/m"
+    # },
+    # "VERSION_PARAM":"version",
+    # "DEFAULT_VERSION":"v1",
+    # "ALLOWED_VERSIONS":["v1","v2"]
 
 }

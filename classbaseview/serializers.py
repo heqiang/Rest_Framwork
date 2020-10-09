@@ -1,4 +1,7 @@
 from abc import ABC
+
+from rest_framework.exceptions import ValidationError
+
 from classbaseview import models
 from rest_framework import serializers
 from classbaseview.models import UserInfo
@@ -67,16 +70,33 @@ class MovieSerializer(serializers.ModelSerializer):
 #             print(x)
 #             ret.append({'id': x.id, "title": x.title})
 #         return ret
+
 class UserSerializer(serializers.ModelSerializer):
-    group_ = serializers.HyperlinkedIdentityField(view_name='ttt',lookup_field='group_id',lookup_url_kwarg='pk')
     class Meta:
         model = models.UserInfo
-        fields = ["id","username","password","user_type","roles","group_"]
-        depth = 0
+        fields = ["id","username","password","user_type","roles","group"]
+        depth = 1
 
 
 class UserGroupSerlizer(serializers.ModelSerializer):
-
     class Meta:
         model = models.UserGroup
         fields ="__all__"
+
+class xxxvalidator(object):
+    def __init__(self,base):
+        self.base=base
+    def __call__(self, value):
+        if not value.startswith(self.base):
+            message = "This field must be  start with %s"% self.base
+            raise ValidationError(message)
+
+    def set_context(self, serializer_field):
+        """
+        This hook is called by the serializer instance,
+        prior to the validation call being made.
+        """
+        # 执行验证之前调用,serializer_fields是当前字段对象
+        pass
+class GroupSerlizers(serializers.Serializer):
+    title = serializers.CharField(error_messages={"required":"标题不能为空"},validators=[xxxvalidator("h"),])
