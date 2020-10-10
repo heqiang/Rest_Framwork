@@ -3,7 +3,7 @@ import  hashlib
 import time
 import json
 from django.http import JsonResponse,HttpResponse
-from classbaseview.models import UserInfo,UserToken,UserGroup
+from classbaseview.models import UserInfo,UserToken,UserGroup,Role
 from classbaseview.serializers import UserSerializer,UserGroupSerlizer,GroupSerlizers
 from classbaseview.util.Authication import Authication
 from classbaseview.util.MyPermission import MyPermission
@@ -12,6 +12,11 @@ from rest_framework.views import APIView
 from rest_framework.versioning import  URLPathVersioning
 from classbaseview.models import UserInfo
 from  rest_framework.serializers import  ValidationError
+from classbaseview.util.pager import PagerSerizers
+from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination,BasePagination
+
+
 order_dict = {
     1:{
         "name":"洗发水",
@@ -147,5 +152,30 @@ class Group(APIView):
         return HttpResponse(msg)
 
 
+"""
+渲染-》rest的Response 翻页配置 
+"""
+
+class PageNumberPaginations(PageNumberPagination):
+    """
+    自定义 翻页参数及数量
+    """
+    page_size = 2
+    page_query_param = 'page'
+    page_size_query_param = "size"
+    max_page_size = 6
+
+
+class PagerView(APIView):
+
+    def get(self,request,*args,**kwargs):
+        roles = Role.objects.all()
+
+        pg = PageNumberPagination()
+        pager_roles = pg.paginate_queryset(queryset=roles,request=request,view=self)
+        # 对分页数据进行序列化
+
+        ser = PagerSerizers(instance=pager_roles, many=True)
+        return Response(ser.data)
 
 
