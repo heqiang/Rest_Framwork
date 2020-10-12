@@ -2,6 +2,7 @@
 import  hashlib
 import time
 import json
+from collections  import OrderedDict
 from django.http import JsonResponse,HttpResponse
 from classbaseview.models import UserInfo,UserToken,UserGroup,Role
 from classbaseview.serializers import UserSerializer,UserGroupSerlizer,GroupSerlizers
@@ -9,12 +10,14 @@ from classbaseview.util.Authication import Authication
 from classbaseview.util.MyPermission import MyPermission
 from classbaseview.util.Mythrottles import  MyBaseThrottle,VisitThrottle,UserThrottle
 from rest_framework.views import APIView
+from rest_framework.generics import GenericAPIView
+from rest_framework.viewsets import GenericViewSet
 from rest_framework.versioning import  URLPathVersioning
 from classbaseview.models import UserInfo
 from  rest_framework.serializers import  ValidationError
-from classbaseview.util.pager import PagerSerizers
+from classbaseview.util.pager import PagerRoleSerizers,PagerUserSerizers
 from rest_framework.response import Response
-from rest_framework.pagination import PageNumberPagination,BasePagination
+from rest_framework.pagination import PageNumberPagination,BasePagination,CursorPagination
 
 
 order_dict = {
@@ -156,26 +159,61 @@ class Group(APIView):
 渲染-》rest的Response 翻页配置 
 """
 
-class PageNumberPaginations(PageNumberPagination):
+class MyPageNumberPaginations(PageNumberPagination):
     """
     自定义 翻页参数及数量
     """
-    page_size = 2
-    page_query_param = 'page'
+    page_size = 3
+    # 路由每页参数
     page_size_query_param = "size"
+    # 每页最大数量
     max_page_size = 6
+    page_query_param = 'page'
 
 
 class PagerView(APIView):
 
     def get(self,request,*args,**kwargs):
         roles = Role.objects.all()
-
-        pg = PageNumberPagination()
+        # rest自带的分页
+        pg = CursorPagination()
+        # 要么在setting中配置全局每页数量 要么如下指定
+        # pg.cursor_query_param="s"
+        pg.page_size=2
+        #默认的排序规则
+        pg.ordering = "id"
         pager_roles = pg.paginate_queryset(queryset=roles,request=request,view=self)
-        # 对分页数据进行序列化
 
-        ser = PagerSerizers(instance=pager_roles, many=True)
-        return Response(ser.data)
+        #使用继承后的分页类
+        # pg= MyPageNumberPaginations()
+        # pager_roles = pg.paginate_queryset(queryset=roles,request=request,view=self)
+        # 对分页数据进行序列化
+        ser = PagerRoleSerizers(instance=pager_roles, many=True)
+        # return Response(ser.data)
+        # 直接返回下面的response 返回的数据中有上下页的链接及 数据的总数
+        response = pg.get_paginated_response(ser.data)
+        del response.data["next"]
+        del  response.data["previous"]
+        return  response
+
+
+"""
+GenericViewSet 和一般的不同的是
+重新了as_view()
+"""
+
+class MyGenericView(GenericViewSet):
+    queryset = Role.objects.all()
+    #序列化
+    serializer_class = PagerRoleSerizers
+    pagination_class = MyPageNumberPaginations
+    def get(self,requests,*args,**kwargs):
+        #数据获取
+        user = self.get_queryset()
+        pager_user = self.paginate_queryset(user)
+        #序列化
+        ser = self.get_serializer(instance=pager_user,many=True)
+        response = self.get_paginated_response(ser.data)
+        return response
 
 

@@ -132,7 +132,7 @@ STATIC_URL = '/static/'
 # 认证 权限 节流 全局配置
 REST_FRAMEWORK = {
     # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 5,
+    # 'PAGE_SIZE': 5,
     #全局认证
     # "DEFAULT_AUTHENTICATION_CLASSES":["classbaseview.auth.Authication1","classbaseview.auth.Authication"],
     # "DEFAULT_AUTHENTICATION_CLASSES": ["classbaseview.util.Authication.Authication"],
