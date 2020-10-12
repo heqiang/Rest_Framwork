@@ -30,7 +30,6 @@ class MyBaseThrottle(object):
             """
             # 返回提示
             ctime = time.time()
-            print(self.history)
             return 12 - (ctime-self.history[-1])
 
 

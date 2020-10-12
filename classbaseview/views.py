@@ -11,15 +11,22 @@ from classbaseview.util.MyPermission import MyPermission
 from classbaseview.util.Mythrottles import  MyBaseThrottle,VisitThrottle,UserThrottle
 from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView
-from rest_framework.viewsets import GenericViewSet
+from rest_framework.viewsets import GenericViewSet,ModelViewSet
 from rest_framework.versioning import  URLPathVersioning
 from classbaseview.models import UserInfo
 from  rest_framework.serializers import  ValidationError
 from classbaseview.util.pager import PagerRoleSerizers,PagerUserSerizers
+from classbaseview.util.ViewSet import MyModelViewSetSerializer
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination,BasePagination,CursorPagination
 
-
+""""
+ 增删改查：ModelViewSet
+ 增删：CreateModelMixin，DestroyModelMixin
+ 复杂逻辑 ：GenericViewSet,APIView
+ 
+ PS:
+"""
 order_dict = {
     1:{
         "name":"洗发水",
@@ -199,7 +206,7 @@ class PagerView(APIView):
 
 """
 GenericViewSet 和一般的不同的是
-重新了as_view()
+重新了as_view() GenericAPIView用处不大
 """
 
 class MyGenericView(GenericViewSet):
@@ -216,4 +223,11 @@ class MyGenericView(GenericViewSet):
         response = self.get_paginated_response(ser.data)
         return response
 
+"""
+    ModelViewSet 使用
+"""
+class MyUserModelViewSet(ModelViewSet):
+    queryset =  UserInfo.objects.all()
+    pagination_class = PageNumberPagination
+    serializer_class = MyModelViewSetSerializer
 
